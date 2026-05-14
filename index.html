@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Where to Stay — Nav Concepts</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  </style>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useRef, useEffect, useCallback } = React;
+
+const VARIANTS = [
+  { id: "current", label: "Current" },
+  { id: "sticky-nav", label: "A: Sticky Top Nav" },
+  { id: "floating-bar", label: "B: Floating Menu Pill" },
+];
+
+const NAV_ITEMS = ["Home", "Schedule", "Travel", "Where to Stay", "Registry", "RSVP"];
+
+const NAV_ICONS = {
+  Home: "⌂",
+  Schedule: "◷",
+  Travel: "✈",
+  "Where to Stay": "🏨",
+  Registry: "🎁",
+  RSVP: "✉",
+};
+
+function PhoneFrame({ children, label }) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+      <div
+        style={{
+          width: 375,
+          height: 720,
+          borderRadius: 40,
+          border: "6px solid #1a1a1a",
+          overflow: "hidden",
+          position: "relative",
+          background: "#fff",
+          boxShadow: "0 20px 60px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05)",
+        }}
+      >
+        <div
+          style={{
+            height: 44,
+            background: "#1a1a1a",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "#fff",
+            fontSize: 12,
+            fontFamily: "system-ui",
+            letterSpacing: 0.5,
+          }}
+        >
+          <span>9:41</span>
+        </div>
+        <div
+          style={{
+            height: 36,
+            background: "#f2f2f7",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            borderBottom: "1px solid #d1d1d6",
+            padding: "0 16px",
+          }}
+        >
+          <div
+            style={{
+              background: "#e5e5ea",
+              borderRadius: 8,
+              padding: "4px 12px",
+              fontSize: 11,
+              color: "#636366",
+              fontFamily: "system-ui",
+              width: "80%",
+              textAlign: "center",
+            }}
+          >
+            withjoy.com/william-and-monica
+          </div>
+        </div>
+        <div style={{ height: "calc(100% - 80px)", overflow: "hidden", position: "relative" }}>
+          {children}
+        </div>
+      </div>
+      <span style={{ fontSize: 13, color: "#8e8e93", fontFamily: "system-ui", fontWeight: 500 }}>
+        {label}
+      </span>
+    </div>
+  );
+}
+
+function HeroImage() {
+  return (
+    <div style={{ position: "relative", width: "100%", height: 320, flexShrink: 0 }}>
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          background: "linear-gradient(135deg, #3a4a5c 0%, #5a6a7c 40%, #7a8a9c 100%)",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "flex-end",
+          padding: 24,
+          position: "relative",
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background:
+              "radial-gradient(ellipse at 35% 50%, rgba(180,160,140,0.3) 0%, transparent 60%), radial-gradient(ellipse at 65% 40%, rgba(120,140,160,0.2) 0%, transparent 50%)",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            bottom: 80,
+            left: "50%",
+            transform: "translateX(-50%)",
+            display: "flex",
+            gap: 8,
+          }}
+        >
+          <div style={{ width: 50, height: 90, borderRadius: "50% 50% 0 0", background: "rgba(40,50,60,0.5)" }} />
+          <div style={{ width: 45, height: 82, borderRadius: "50% 50% 0 0", background: "rgba(40,50,60,0.45)" }} />
+        </div>
+        <div style={{ position: "relative", zIndex: 1 }}>
+          <h2
+            style={{
+              fontSize: 28, fontWeight: 400, color: "#fff", margin: 0,
+              fontFamily: "'Playfair Display', Georgia, serif", lineHeight: 1.1,
+            }}
+          >
+            William & Monica
+          </h2>
+          <p style={{ fontSize: 13, color: "rgba(255,255,255,0.85)", margin: "6px 0 0", fontFamily: "system-ui" }}>
+            We're getting married and we'd like you to come celebrate!
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function InfoPanel() {
+  return (
+    <div
+      style={{
+        background: "#c5d2d8", padding: "32px 24px", textAlign: "center",
+        fontFamily: "'Playfair Display', Georgia, serif",
+      }}
+    >
+      <div style={{ fontSize: 28, marginBottom: 12 }}>🐾</div>
+      <div style={{ fontSize: 18, fontWeight: 400, color: "#2c3e50", lineHeight: 1.4 }}>
+        Saturday<br />September 26, 2026
+      </div>
+      <div style={{ fontSize: 13, color: "#4a5c6a", marginTop: 8, fontFamily: "system-ui" }}>
+        Ciudad de México, Ciudad de México
+      </div>
+      <button
+        style={{
+          marginTop: 16, padding: "8px 28px", border: "1px solid #4a5c6a", borderRadius: 20,
+          background: "transparent", color: "#2c3e50", fontSize: 13, fontFamily: "system-ui",
+          cursor: "pointer", letterSpacing: 0.5,
+        }}
+      >
+        RSVP
+      </button>
+    </div>
+  );
+}
+
+function StorySection() {
+  return (
+    <div style={{ background: "#c5d2d8", padding: "24px 24px 40px", textAlign: "center" }}>
+      <h3
+        style={{
+          fontFamily: "'Playfair Display', Georgia, serif", fontSize: 22,
+          fontWeight: 400, color: "#2c3e50", margin: "0 0 12px",
+        }}
+      >
+        Story
+      </h3>
+      <p style={{ fontSize: 13, color: "#4a5c6a", lineHeight: 1.6, fontFamily: "system-ui", margin: 0 }}>
+        A true product of the pandemic, William and Monica met in Washington, DC in 2020, literally
+        the day before the world shut down. They dated for eight months before deciding to make it official…
+      </p>
+    </div>
+  );
+}
+
+function MoreContent() {
+  return (
+    <div style={{ background: "#c5d2d8", padding: "24px 24px 120px", textAlign: "center" }}>
+      <h3
+        style={{
+          fontFamily: "'Playfair Display', Georgia, serif", fontSize: 22,
+          fontWeight: 400, color: "#2c3e50", margin: "0 0 12px",
+        }}
+      >
+        Wedding Party
+      </h3>
+      <p style={{ fontSize: 13, color: "#4a5c6a", lineHeight: 1.6, fontFamily: "system-ui", margin: 0 }}>
+        Our favorite people, all in one place…
+      </p>
+    </div>
+  );
+}
+
+function MenuButton() {
+  return (
+    <div style={{ position: "absolute", top: 12, left: 16, zIndex: 10 }}>
+      <button
+        style={{
+          background: "rgba(255,255,255,0.9)", border: "none", borderRadius: 6,
+          padding: "6px 14px", fontSize: 12, fontFamily: "system-ui", color: "#333",
+          cursor: "pointer", display: "flex", alignItems: "center", gap: 6,
+          boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
+        }}
+      >
+        <span style={{ fontSize: 14 }}>☰</span> MENU
+      </button>
+    </div>
+  );
+}
+
+// Hook: track scroll past a threshold
+function useScrollPast(ref, threshold) {
+  const [past, setPast] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const handler = () => setPast(el.scrollTop > threshold);
+    el.addEventListener("scroll", handler, { passive: true });
+    return () => el.removeEventListener("scroll", handler);
+  }, [ref, threshold]);
+  return past;
+}
+
+// ——— CURRENT ———
+function CurrentVariant() {
+  return (
+    <div style={{ height: "100%", overflow: "auto" }}>
+      <MenuButton />
+      <HeroImage />
+      <InfoPanel />
+      <StorySection />
+      <MoreContent />
+    </div>
+  );
+}
+
+// ——— A: STICKY TOP NAV (appears on scroll) ———
+function StickyNavVariant() {
+  const scrollRef = useRef(null);
+  const showNav = useScrollPast(scrollRef, 280);
+  const [activeItem, setActiveItem] = useState("Home");
+  const navRef = useRef(null);
+
+  // Enable drag-to-scroll on the nav bar
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStart = useRef({ x: 0, scrollLeft: 0 });
+
+  const onPointerDown = useCallback((e) => {
+    const nav = navRef.current;
+    if (!nav) return;
+    setIsDragging(true);
+    dragStart.current = { x: e.clientX, scrollLeft: nav.scrollLeft };
+    nav.setPointerCapture(e.pointerId);
+  }, []);
+
+  const onPointerMove = useCallback((e) => {
+    if (!isDragging) return;
+    const nav = navRef.current;
+    if (!nav) return;
+    const dx = e.clientX - dragStart.current.x;
+    nav.scrollLeft = dragStart.current.scrollLeft - dx;
+  }, [isDragging]);
+
+  const onPointerUp = useCallback(() => setIsDragging(false), []);
+
+  return (
+    <div ref={scrollRef} style={{ height: "100%", overflow: "auto" }}>
+      <style>{`
+        @keyframes navSlideDown {
+          from { opacity: 0; transform: translateY(-100%); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .topnav-scroll::-webkit-scrollbar { display: none; }
+      `}</style>
+      <MenuButton />
+      <HeroImage />
+      <InfoPanel />
+      <StorySection />
+      <MoreContent />
+
+      {/* Sticky nav — appears after scroll */}
+      {showNav && (
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            zIndex: 20,
+            background: "rgba(255,255,255,0.95)",
+            backdropFilter: "blur(12px)",
+            WebkitBackdropFilter: "blur(12px)",
+            borderBottom: "1px solid rgba(0,0,0,0.08)",
+            animation: "navSlideDown 0.25s ease-out",
+          }}
+        >
+          <div
+            ref={navRef}
+            className="topnav-scroll"
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={onPointerUp}
+            onPointerCancel={onPointerUp}
+            style={{
+              display: "flex",
+              overflowX: "auto",
+              padding: "0 4px",
+              scrollbarWidth: "none",
+              cursor: isDragging ? "grabbing" : "grab",
+              userSelect: "none",
+              position: "relative",
+            }}
+          >
+            {NAV_ITEMS.map((item) => (
+              <button
+                key={item}
+                onClick={() => { if (!isDragging) setActiveItem(item); }}
+                style={{
+                  flex: "0 0 auto",
+                  padding: "12px 14px",
+                  border: "none",
+                  background: "transparent",
+                  fontSize: 12,
+                  fontFamily: "system-ui",
+                  color: activeItem === item ? "#2c3e50" : "#8e8e93",
+                  fontWeight: activeItem === item ? 600 : 400,
+                  cursor: "pointer",
+                  whiteSpace: "nowrap",
+                  borderBottom: activeItem === item ? "2px solid #2c3e50" : "2px solid transparent",
+                  transition: "all 0.2s",
+                  letterSpacing: 0.3,
+                  pointerEvents: isDragging ? "none" : "auto",
+                }}
+              >
+                {item}
+              </button>
+            ))}
+          </div>
+          {/* Scroll fade hint */}
+          <div
+            style={{
+              position: "absolute", right: 0, top: 0, bottom: 0, width: 40,
+              background: "linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,0.95))",
+              pointerEvents: "none",
+            }}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ——— B: FLOATING MENU PILL (expands on tap) ———
+function FloatingPillVariant() {
+  const scrollRef = useRef(null);
+  const showPill = useScrollPast(scrollRef, 280);
+  const [expanded, setExpanded] = useState(false);
+  const [activeItem, setActiveItem] = useState("Home");
+
+  return (
+    <div ref={scrollRef} style={{ height: "100%", overflow: "auto" }}>
+      <style>{`
+        @keyframes pillFadeIn {
+          from { opacity: 0; transform: translateX(-50%) translateY(12px); }
+          to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+        @keyframes menuExpand {
+          from { opacity: 0; transform: translateX(-50%) scale(0.9); }
+          to { opacity: 1; transform: translateX(-50%) scale(1); }
+        }
+      `}</style>
+      <MenuButton />
+      <HeroImage />
+      <InfoPanel />
+      <StorySection />
+      <MoreContent />
+
+      {showPill && !expanded && (
+        <div
+          onClick={() => setExpanded(true)}
+          style={{
+            position: "absolute",
+            bottom: 20,
+            left: "50%",
+            transform: "translateX(-50%)",
+            zIndex: 30,
+            background: "rgba(30, 40, 50, 0.92)",
+            backdropFilter: "blur(16px)",
+            WebkitBackdropFilter: "blur(16px)",
+            borderRadius: 24,
+            padding: "10px 20px",
+            boxShadow: "0 8px 32px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.08)",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            animation: "pillFadeIn 0.3s ease-out",
+            whiteSpace: "nowrap",
+          }}
+        >
+          <span style={{ fontSize: 14 }}>☰</span>
+          <span style={{ fontSize: 13, color: "#fff", fontFamily: "system-ui", fontWeight: 500 }}>
+            Menu
+          </span>
+        </div>
+      )}
+
+      {showPill && expanded && (
+        <>
+          {/* Backdrop */}
+          <div
+            onClick={() => setExpanded(false)}
+            style={{
+              position: "absolute", inset: 0, zIndex: 29,
+              background: "rgba(0,0,0,0.3)",
+            }}
+          />
+          {/* Expanded menu */}
+          <div
+            style={{
+              position: "absolute",
+              bottom: 20,
+              left: "50%",
+              transform: "translateX(-50%)",
+              zIndex: 30,
+              background: "rgba(30, 40, 50, 0.95)",
+              backdropFilter: "blur(20px)",
+              WebkitBackdropFilter: "blur(20px)",
+              borderRadius: 20,
+              padding: "8px",
+              boxShadow: "0 12px 48px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.08)",
+              animation: "menuExpand 0.2s ease-out",
+              width: 280,
+            }}
+          >
+            {NAV_ITEMS.map((item, i) => {
+              const isActive = activeItem === item;
+              return (
+                <button
+                  key={item}
+                  onClick={() => { setActiveItem(item); setExpanded(false); }}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 12,
+                    width: "100%",
+                    padding: "12px 14px",
+                    border: "none",
+                    background: isActive ? "rgba(255,255,255,0.12)" : "transparent",
+                    borderRadius: 12,
+                    cursor: "pointer",
+                    transition: "background 0.15s",
+                  }}
+                >
+                  <span style={{ fontSize: 18, width: 24, textAlign: "center" }}>{NAV_ICONS[item]}</span>
+                  <span
+                    style={{
+                      fontSize: 14, fontFamily: "system-ui",
+                      color: isActive ? "#fff" : "rgba(255,255,255,0.7)",
+                      fontWeight: isActive ? 600 : 400,
+                    }}
+                  >
+                    {item}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function WTSNavConcepts() {
+  const [active, setActive] = useState("current");
+
+  return (
+    <div
+      style={{
+        minHeight: "100vh", background: "#fafafa", padding: "32px 24px",
+        fontFamily: "system-ui, -apple-system, sans-serif",
+      }}
+    >
+      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+        <div style={{ marginBottom: 28, textAlign: "center" }}>
+          <h1 style={{ fontSize: 20, fontWeight: 600, color: "#1a1a1a", margin: "0 0 6px", letterSpacing: -0.3 }}>
+            Where to Stay — Discoverability
+          </h1>
+          <p style={{ fontSize: 14, color: "#8e8e93", margin: 0 }}>
+            Hypothesis: guests miss "Where to Stay" because there's no visible nav
+          </p>
+        </div>
+
+        <div
+          style={{
+            display: "flex", justifyContent: "center", gap: 4, background: "#e5e5ea",
+            borderRadius: 10, padding: 3, width: "fit-content", margin: "0 auto 12px",
+          }}
+        >
+          {VARIANTS.map((v) => (
+            <button
+              key={v.id}
+              onClick={() => setActive(v.id)}
+              style={{
+                padding: "8px 18px", border: "none", borderRadius: 8, fontSize: 13,
+                fontWeight: active === v.id ? 600 : 400,
+                color: active === v.id ? "#1a1a1a" : "#636366",
+                background: active === v.id ? "#fff" : "transparent",
+                cursor: "pointer", transition: "all 0.2s",
+                boxShadow: active === v.id ? "0 1px 3px rgba(0,0,0,0.1)" : "none",
+              }}
+            >
+              {v.label}
+            </button>
+          ))}
+        </div>
+
+        {(active === "sticky-nav" || active === "floating-bar") && (
+          <p style={{ textAlign: "center", fontSize: 12, color: "#aeaeb2", margin: "0 0 20px", fontStyle: "italic" }}>
+            Scroll down inside the phone to see the nav appear
+          </p>
+        )}
+        {active === "current" && <div style={{ height: 20 }} />}
+
+        <div
+          style={{
+            display: "flex", justifyContent: "center", alignItems: "flex-start",
+            gap: 48, flexWrap: "wrap",
+          }}
+        >
+          <PhoneFrame label={VARIANTS.find((v) => v.id === active)?.label}>
+            {active === "current" && <CurrentVariant />}
+            {active === "sticky-nav" && <StickyNavVariant />}
+            {active === "floating-bar" && <FloatingPillVariant />}
+          </PhoneFrame>
+
+          <div style={{ maxWidth: 320, padding: "24px 0" }}>
+            {active === "current" && (
+              <div>
+                <div
+                  style={{
+                    display: "inline-block", padding: "3px 10px", background: "#fee2e2",
+                    borderRadius: 6, fontSize: 11, fontWeight: 600, color: "#991b1b",
+                    marginBottom: 12, letterSpacing: 0.3,
+                  }}
+                >
+                  PROBLEM
+                </div>
+                <h3 style={{ fontSize: 17, fontWeight: 600, color: "#1a1a1a", margin: "0 0 10px" }}>
+                  Navigation is hidden behind hamburger
+                </h3>
+                <p style={{ fontSize: 14, color: "#636366", lineHeight: 1.55, margin: 0 }}>
+                  The only way to reach "Where to Stay" is through the ☰ MENU button. On mobile
+                  especially, guests who land here from a save-the-date link are task-oriented —
+                  they scan, RSVP, and leave. They have no reason to open a menu they don't know
+                  exists for them.
+                </p>
+              </div>
+            )}
+            {active === "sticky-nav" && (
+              <div>
+                <div
+                  style={{
+                    display: "inline-block", padding: "3px 10px", background: "#dbeafe",
+                    borderRadius: 6, fontSize: 11, fontWeight: 600, color: "#1e40af",
+                    marginBottom: 12, letterSpacing: 0.3,
+                  }}
+                >
+                  OPTION A
+                </div>
+                <h3 style={{ fontSize: 17, fontWeight: 600, color: "#1a1a1a", margin: "0 0 10px" }}>
+                  Sticky top nav (scroll-triggered)
+                </h3>
+                <p style={{ fontSize: 14, color: "#636366", lineHeight: 1.55, margin: "0 0 12px" }}>
+                  The nav bar stays hidden while the hero is in view — preserving the full-bleed
+                  experience. Once the guest scrolls past it, the bar slides down from the top and
+                  stays sticky. Horizontally scrollable with a right-edge fade hint.
+                </p>
+                <div style={{ fontSize: 13, color: "#48484a", lineHeight: 1.6 }}>
+                  <p style={{ margin: "0 0 8px" }}>
+                    <strong>Pros:</strong> Best of both worlds — immersive hero on first load,
+                    full nav when the guest is actually browsing. Swipe to scroll is intuitive.
+                  </p>
+                  <p style={{ margin: "0 0 8px" }}>
+                    <strong>Tradeoff:</strong> Guest may not scroll far enough to trigger it. The
+                    scroll-to-reveal pattern is less discoverable than always-visible nav.
+                  </p>
+                  <p style={{ margin: 0 }}>
+                    <strong>Best for:</strong> Layouts that prioritize hero aesthetics but have 4+
+                    pages that need wayfinding.
+                  </p>
+                </div>
+              </div>
+            )}
+            {active === "floating-bar" && (
+              <div>
+                <div
+                  style={{
+                    display: "inline-block", padding: "3px 10px", background: "#d1fae5",
+                    borderRadius: 6, fontSize: 11, fontWeight: 600, color: "#065f46",
+                    marginBottom: 12, letterSpacing: 0.3,
+                  }}
+                >
+                  OPTION B
+                </div>
+                <h3 style={{ fontSize: 17, fontWeight: 600, color: "#1a1a1a", margin: "0 0 10px" }}>
+                  Floating menu pill (tap to expand)
+                </h3>
+                <p style={{ fontSize: 14, color: "#636366", lineHeight: 1.55, margin: "0 0 12px" }}>
+                  A compact "Menu" pill floats at the bottom after the guest scrolls past the hero.
+                  Tapping it opens a popover with all pages listed — icon + full label. Tapping
+                  outside or selecting a page closes it.
+                </p>
+                <div style={{ fontSize: 13, color: "#48484a", lineHeight: 1.6 }}>
+                  <p style={{ margin: "0 0 8px" }}>
+                    <strong>Pros:</strong> Minimal footprint when closed — just a small pill.
+                    Full page list on demand. Zero layout changes. Can coexist with the
+                    hamburger or replace it.
+                  </p>
+                  <p style={{ margin: "0 0 8px" }}>
+                    <strong>Tradeoff:</strong> Two taps to navigate (open pill → select page) vs.
+                    one tap in A. The pill itself doesn't reveal what's available — guests
+                    still need to tap to discover pages exist.
+                  </p>
+                  <p style={{ margin: 0 }}>
+                    <strong>Best for:</strong> Maximum design preservation. Easy feature-flag
+                    test as a pure overlay. Good if the couple's aesthetic is the priority
+                    and you want a lighter touch than A.
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<WTSNavConcepts />);
+  </script>
+</body>
+</html>
